@@ -1,0 +1,38 @@
+{
+  "name": "charity-system",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js",
+    "test": "node --test --test-timeout=600000 src/tests/*.test.js",
+    "test:first": "NODE_ENV=test node --test --test-timeout=1200000 src/tests/*.test.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "ajv-formats": "^3.0.1",
+    "bcryptjs": "^3.0.3",
+    "cloudinary": "^2.9.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.3.2",
+    "helmet": "^8.1.0",
+    "hpp": "^0.2.3",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.0.0",
+    "morgan": "^1.10.1",
+    "multer": "^2.1.1",
+    "node-cron": "^4.2.1",
+    "nodemailer": "^8.0.5",
+    "pino": "^9.9.0"
+  },
+  "devDependencies": {
+    "mongodb-memory-server": "^10.3.0",
+    "nodemon": "^3.1.11"
+  }
+}

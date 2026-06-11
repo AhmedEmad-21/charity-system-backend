@@ -1,0 +1,9 @@
+module.exports = {
+  type: 'object',
+  additionalProperties: false,
+  required: ['email', 'password'],
+  properties: {
+    email: { type: 'string', format: 'email' },
+    password: { type: 'string', minLength: 8 },
+  },
+};
