@@ -225,11 +225,10 @@ const shutdown = async (signal) => {
 process.on("SIGINT", () => shutdown("SIGINT"));
 process.on("SIGTERM", () => shutdown("SIGTERM"));
 
-if (require.main === module) {
+// تشغيل السيرفر التقليدي محلياً فقط (Development)، وتجنبه في بيئة الـ Production على فيرسل
+if (require.main === module && process.env.NODE_ENV !== "production") {
   startServer();
 }
 
-module.exports = {
-  app,
-  startServer,
-};
+// التصدير المباشر للـ app كـ Default Export متوافق مع بنية Vercel Serverless
+module.exports = app;
