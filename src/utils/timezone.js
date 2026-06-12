@@ -21,21 +21,49 @@ const formatEgyptDateTime = (date = new Date(), timeZone = EGYPT_TIMEZONE) => {
 const ISO_UTC_REGEX = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/;
 
 const isPlainObject = (value) => {
+  if (value === null || typeof value !== "object") {
+    return false;
+  }
+
+  const prototype = Object.getPrototypeOf(value);
+  return prototype === Object.prototype || prototype === null;
+};
+
+const isMongoObjectId = (value) => {
   return (
     value !== null &&
     typeof value === "object" &&
-    Object.prototype.toString.call(value) === "[object Object]"
+    typeof value.toHexString === "function" &&
+    (value._bsontype === "ObjectId" || value._bsontype === "ObjectID")
   );
 };
 
 // Keep Date values in DB as-is (UTC instant), but normalize API output display to Egypt time.
-const normalizeResponseTimestamps = (value, timeZone = EGYPT_TIMEZONE) => {
+const normalizeResponseTimestamps = (
+  value,
+  timeZone = EGYPT_TIMEZONE,
+  seen = new WeakSet(),
+) => {
   if (value instanceof Date) {
     return formatEgyptDateTime(value, timeZone);
   }
 
+  if (isMongoObjectId(value)) {
+    return value.toString();
+  }
+
+  if (value && typeof value === "object") {
+    if (seen.has(value)) {
+      return undefined;
+    }
+
+    seen.add(value);
+  }
+
   if (Array.isArray(value)) {
-    return value.map((item) => normalizeResponseTimestamps(item, timeZone));
+    return value.map((item) =>
+      normalizeResponseTimestamps(item, timeZone, seen),
+    );
   }
 
   if (typeof value === "string" && ISO_UTC_REGEX.test(value)) {
@@ -45,7 +73,7 @@ const normalizeResponseTimestamps = (value, timeZone = EGYPT_TIMEZONE) => {
   if (isPlainObject(value)) {
     const normalized = {};
     for (const [key, fieldValue] of Object.entries(value)) {
-      normalized[key] = normalizeResponseTimestamps(fieldValue, timeZone);
+      normalized[key] = normalizeResponseTimestamps(fieldValue, timeZone, seen);
     }
     return normalized;
   }

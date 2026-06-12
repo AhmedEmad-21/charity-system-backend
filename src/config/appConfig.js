@@ -1,6 +1,8 @@
 const dotenv = require("dotenv");
 
-dotenv.config();
+if (process.env.NODE_ENV !== "production") {
+  dotenv.config();
+}
 
 const parsePort = (value, fallback) => {
   const port = Number(value ?? fallback);
