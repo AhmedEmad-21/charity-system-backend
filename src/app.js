@@ -102,6 +102,7 @@ app.use(idValidatorMW());
 
 const connectDB = async ({ exitOnFailure = false } = {}) => {
   if (mongoose.connection.readyState === 1) {
+    console.log("⚡ [Database] Using existing MongoDB connection");
     return mongoose.connection;
   }
 
@@ -109,11 +110,11 @@ const connectDB = async ({ exitOnFailure = false } = {}) => {
     dbConnectionPromise = mongoose
       .connect(config.mongoUri)
       .then((connection) => {
-        console.log("MongoDB connected successfully");
+        console.log("🚀 [Database] MongoDB connected successfully to:", connection.connection.name);
         return connection;
       })
       .catch((error) => {
-        console.error("MongoDB connection failed:", error.message);
+        console.error("❌ [Database] MongoDB connection failed:", error.message);
         if (exitOnFailure) {
           process.exit(1);
         }
@@ -225,10 +226,10 @@ const shutdown = async (signal) => {
 process.on("SIGINT", () => shutdown("SIGINT"));
 process.on("SIGTERM", () => shutdown("SIGTERM"));
 
-// تشغيل السيرفر التقليدي محلياً فقط (Development)، وتجنبه في بيئة الـ Production على فيرسل
-if (require.main === module && process.env.NODE_ENV !== "production") {
+// تشغيل السيرفر التقليدي في أي بيئة عند تشغيل الملف مباشرة (تم إزالة شرط منع الـ production)
+if (require.main === module) {
   startServer();
 }
 
-// التصدير المباشر للـ app كـ Default Export متوافق مع بنية Vercel Serverless
+// التصدير للاستخدام في أي مكان آخر
 module.exports = app;
