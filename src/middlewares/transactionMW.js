@@ -1,10 +1,17 @@
 const mongoose = require("mongoose");
 
 module.exports = async function transactionMW(req, res, next) {
-  const session = await mongoose.startSession();
-  session.startTransaction();
+  let session;
 
-  req.mongoSession = session;
+  try {
+    session = await mongoose.startSession();
+    session.startTransaction();
+    req.mongoSession = session;
+  } catch (err) {
+    console.warn("[TransactionMW] Transactions not supported, running without:", err.message);
+    req.mongoSession = null;
+    return next();
+  }
 
   const finalize = async (shouldCommit) => {
     if (session.inTransaction()) {

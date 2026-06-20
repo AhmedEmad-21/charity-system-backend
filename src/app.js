@@ -46,6 +46,8 @@ const lastAidScoreMappingRoutes = require("./routes/lastAidScoreMappingRoutes");
 const priorityRoutes = require("./routes/priorityRoutes");
 const recipientPriorityRoutes = require("./routes/recipientPriorityRoutes");
 const pointsRoutes = require("./routes/pointsRoutes");
+const AIhealth = require("./routes/AIhealth");
+const familyRoutes = require("./routes/familyRoutes");
 
 const app = express();
 let dbConnectionPromise = null;
@@ -107,11 +109,15 @@ const connectDB = async ({ exitOnFailure = false } = {}) => {
   }
 
   if (!dbConnectionPromise) {
+    const mongoUri = config.mongoUri.includes('retryWrites')
+      ? config.mongoUri
+      : `${config.mongoUri}${config.mongoUri.includes('?') ? '&' : '?'}retryWrites=false`;
+
     dbConnectionPromise = mongoose
-      .connect(config.mongoUri)
-      .then((connection) => {
-        console.log("🚀 [Database] MongoDB connected successfully to:", connection.connection.name);
-        return connection;
+      .connect(mongoUri)
+      .then((m) => {
+        console.log("🚀 [Database] MongoDB connected successfully to:", mongoose.connection.name);
+        return m;
       })
       .catch((error) => {
         console.error("❌ [Database] MongoDB connection failed:", error.message);
@@ -166,6 +172,8 @@ app.use("/api/mapping/last-aid", lastAidScoreMappingRoutes);
 app.use("/api/priority", priorityRoutes);
 app.use("/api/recipients", recipientPriorityRoutes);
 app.use("/api/points", pointsRoutes);
+app.use("/api/aihealth", AIhealth);
+app.use("/api/families", familyRoutes);
 
 app.use(errorHandler);
 

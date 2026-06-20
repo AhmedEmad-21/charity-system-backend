@@ -1,0 +1,343 @@
+{
+  "info": {
+    "name": "Charity System API",
+    "description": "Family, FamilyMember & AI Health Assessment endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000/api" },
+    { "key": "token", "value": "" },
+    { "key": "familyId", "value": "" },
+    { "key": "memberId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": \"Staff\",\n  \"name\": \"Ahmed Nagh\",\n  \"email\": \"ahmed@example.com\",\n  \"passwordHash\": \"password123\",\n  \"phoneNumber\": \"01234567890\",\n  \"address\": \"Cairo, Egypt\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.success && res.data?.accessToken) {",
+                  "  pm.collectionVariables.set('token', res.data.accessToken);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"ahmed@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Get Me",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "me"]
+            }
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"your-refresh-token-here\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/refresh-token",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "refresh-token"]
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"your-refresh-token-here\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "logout"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Families",
+      "item": [
+        {
+          "name": "Create Family",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.success && res.data?._id) {",
+                  "  pm.collectionVariables.set('familyId', res.data._id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"health_sub_score\": 0\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/families",
+              "host": ["{{baseUrl}}"],
+              "path": ["families"]
+            }
+          }
+        },
+        {
+          "name": "List Families",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/families",
+              "host": ["{{baseUrl}}"],
+              "path": ["families"]
+            }
+          }
+        },
+        {
+          "name": "Get Family by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/families/{{familyId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["families", "{{familyId}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Family",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"health_sub_score\": 5\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/families/{{familyId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["families", "{{familyId}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Family",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/families/{{familyId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["families", "{{familyId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Family Members",
+      "item": [
+        {
+          "name": "Create Member",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.success && res.data?._id) {",
+                  "  pm.collectionVariables.set('memberId', res.data._id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"health_status\": \"healthy\",\n  \"health_severity\": \"none\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/families/{{familyId}}/members",
+              "host": ["{{baseUrl}}"],
+              "path": ["families", "{{familyId}}", "members"]
+            }
+          }
+        },
+        {
+          "name": "List Members",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/families/{{familyId}}/members",
+              "host": ["{{baseUrl}}"],
+              "path": ["families", "{{familyId}}", "members"]
+            }
+          }
+        },
+        {
+          "name": "Get Member by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/families/{{familyId}}/members/{{memberId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["families", "{{familyId}}", "members", "{{memberId}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Member",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"health_status\": \"chronic_illness\",\n  \"health_severity\": \"moderate\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/families/{{familyId}}/members/{{memberId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["families", "{{familyId}}", "members", "{{memberId}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Member",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/families/{{familyId}}/members/{{memberId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["families", "{{familyId}}", "members", "{{memberId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "AI Health Assessment",
+      "item": [
+        {
+          "name": "Assess Family Health",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"members\": [\n    {\n      \"memberId\": \"{{memberId}}\",\n      \"medicalRecordText\": \"Patient is a 45-year-old male with type 2 diabetes diagnosed 5 years ago. HbA1c is 8.2%, blood pressure 145/90. Currently on metformin 850mg twice daily. Reports occasional tingling in feet.\"\n    },\n    {\n      \"memberId\": \"67ef98a1b2c3d4e5f6a7b8c9\",\n      \"medicalRecordText\": \"8-year-old female, routine checkup. Height and weight in 50th percentile. No complaints. Normal physical examination.\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/aihealth/families/{{familyId}}/health-assessment",
+              "host": ["{{baseUrl}}"],
+              "path": ["aihealth", "families", "{{familyId}}", "health-assessment"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
