@@ -59,11 +59,12 @@ const normalizeRoleKey = (role) => {
 };
 
 const hasPermission = (role, permission) => {
-	const permissions = ROLE_PERMISSIONS[normalizeRoleKey(role)];
+    // حماية إضافية: لو الـ role مش موجود، مفيش صلاحية
+    if (!role) return false;
+    const permissions = ROLE_PERMISSIONS[normalizeRoleKey(role)];
     if (!permissions) {
         return false;
     }
-
     return permissions.has('*') || permissions.has(permission);
 };
 
@@ -77,6 +78,8 @@ const checkRoleMW = (...required) => {
 
     return (req, res, next) => {
         const user = req.user;
+
+        // 1. التأكد إن الـ user والـ role موجودين قبل أي فحص
         if (!user || !user.role) {
             return next(new UnauthorizedError('Unauthorized: user not authenticated or role missing'));
         }
@@ -84,10 +87,12 @@ const checkRoleMW = (...required) => {
         const userRole = String(user.role);
         const normalizedRole = normalize(userRole);
 
+        // 2. التحقق من الـ Legacy Roles
         if (legacyRoles.has(normalizedRole) && requiredPermissions.some((item) => item === normalizedRole)) {
             return next();
         }
 
+        // 3. التحقق من الصلاحيات مع حماية إضافية (السطر اللي كان بيعمل الـ crash)
         if (requiredPermissions.some((permission) => hasPermission(userRole, permission))) {
             return next();
         }

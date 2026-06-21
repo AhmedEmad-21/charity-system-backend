@@ -9,7 +9,11 @@ const { PERMISSIONS } = require('../middlewares/checkRoleMW');
 
 const router = express.Router();
 
+// 🔒 1. بنحط السطر هنا (حارس البوابة الرئيسي للمخزن)
+// أي راوت مكتوب تحت السطر ده هيتطبق عليه الحماية دي أوتوماتيك
 router.use(authMW, checkRoleMW(PERMISSIONS.MANAGE_INVENTORY));
+
+// 🚀 2. الراوتس دي دلوقتي كلها محمية وما تقدرش تتطلب إلا بتوكن الموظف (Staff)
 router.get('/low-stock', inventoryController.getLowStock);
 router.get('/', inventoryController.getInventory);
 router.post('/', transactionMW, validateSchema(inventoryValidate), inventoryController.createInventory);

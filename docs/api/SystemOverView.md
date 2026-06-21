@@ -83,3 +83,10 @@ I recently designed and implemented a complete backend system for managing donat
 💬 This project pushed me to think beyond basic CRUD into real-world backend engineering challenges like consistency, fairness algorithms, and distributed system behavior.
 
 Always open to feedback or discussions 👇
+حازم واحد 
+شروق اتنين 
+احمد تلاتة 
+دنيا الرابع 
+اسلام الخامس 
+كسبان السادس 
+وليد السابع 

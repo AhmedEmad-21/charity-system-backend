@@ -10,6 +10,11 @@ const donationReqSchema = new mongoose.Schema(
             required: true,
             index: true,
         },
+        // أضفنا الحقول الناقصة هنا:
+        itemName: { type: String, required: true },
+        category: { type: String, required: true },
+        quantity: { type: Number, required: true },
+
         creationDate: {
             type: Date,
             default: Date.now,

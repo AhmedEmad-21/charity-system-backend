@@ -70,13 +70,14 @@ const registerUser = async (payload, options = {}) => {
     throw new ConflictError("Email already exists");
   }
 
+  // 🎯 تعديل أحمد: الحساب بينزل active فوراً ومفيش suspended بسبب الـ OTP
   const user = await User.create({
     ...payload,
-    accountStatus: config.features.enableOtpAuth
-      ? "suspended"
-      : payload.accountStatus || "active",
+    accountStatus: "active",
   });
 
+  // تم إيقاف إرسال الـ OTP عند التسجيل الجديد للتيست والمناقشة
+  /*
   if (config.features.enableOtpAuth) {
     await otpService.sendOtpFlow({
       email: user.email,
@@ -84,6 +85,7 @@ const registerUser = async (payload, options = {}) => {
       enforceCooldown: false,
     });
   }
+  */
 
   const tokens = generateTokens(user);
 
@@ -104,11 +106,14 @@ const loginUser = async ({ email, password }) => {
     throw new UnauthorizedError("Invalid email or password");
   }
 
+  // 🎯 الضربــــة القاضيــــة: شيلنا شرط الـ OTP اللي كان بيوقف الحساب هنا نهائياً
+  /*
   if (config.features.enableOtpAuth && user.accountStatus !== "active") {
     throw new UnauthorizedError(
       "Account is not verified yet. Please verify OTP first.",
     );
   }
+  */
 
   const tokens = generateTokens(user);
   return {
@@ -214,7 +219,6 @@ const resetUserPassword = async ({ token, newPassword, email, otp }) => {
       let emailValue = email;
       let otpCode = otp;
 
-      // Backward-compatible format: token=base64("email:otp")
       if ((!emailValue || !otpCode) && token) {
         const decoded = Buffer.from(String(token), "base64").toString("utf8");
         const [decodedEmail, decodedOtp] = decoded.split(":");
@@ -290,7 +294,6 @@ module.exports = {
   sendOTP,
   resendOTP,
   verifyUserOTP,
-  // Backward compatibility with existing callers
   register: registerUser,
   login: loginUser,
 };

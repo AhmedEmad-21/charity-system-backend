@@ -7,13 +7,14 @@ const { ForbiddenError, UnauthorizedError } = require("../errors/appErrors");
  * Requirements:
  * 1. DEVELOPER_API_KEY must be set in .env file (non-empty string)
  * 2. Client must send X-Developer-Key header matching the .env value
- * 3. Disabled automatically in production mode
+ * 3. Disabled automatically in production mode (TEMPORARILY BYPASSED FOR TESTING)
  *
  * Usage:
  *   Header: X-Developer-Key: dev-testing-secret-key-12345
  */
 module.exports = function developerAccessMW(req, res, next) {
-  // Block developer endpoints in production
+  // 🚫 تم إيقاف هذا الشيك مؤقتاً لتشغيل الـ Endpoint في أي بيئة (بما فيها الـ Production على السيرفر)
+  /*
   if (config.isProduction) {
     return next(
       new ForbiddenError(
@@ -21,6 +22,7 @@ module.exports = function developerAccessMW(req, res, next) {
       ),
     );
   }
+  */
 
   // Check if DEVELOPER_API_KEY is configured in .env
   const configuredKey = String(
