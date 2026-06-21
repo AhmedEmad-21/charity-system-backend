@@ -58,16 +58,7 @@ if (config.appConfig.trustProxy) {
 app.locals.cookieOptions = config.appConfig.cookie;
 
 const isOriginAllowed = (origin) => {
-  const trusted = config.securityConfig.trustedOrigins;
-  if (trusted.includes("*")) {
-    return true;
-  }
-
-  if (!origin) {
-    return true;
-  }
-
-  return trusted.includes(origin);
+  return true;
 };
 
 // Middleware

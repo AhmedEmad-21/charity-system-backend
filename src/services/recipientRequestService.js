@@ -37,6 +37,15 @@ const fetchUserRequests = async (recipientUserID) => {
     .lean();
 };
 
+const fetchAllRequests = async (options = {}) => {
+  const { session = null } = options;
+  // filter while status == pending
+  const query = RecipientRequest.find({ status: "pending" }).populate(requestPopulation).sort({ createdAt: -1 });
+  if (session && typeof session.inTransaction === "function")
+    query.session(session);
+  return await query.exec();
+};
+
 const attachRequestedItems = async (request, session = null) => {
   if (!request) return null;
   const query = RequestedItem.find({ recipientRequestID: request._id })
@@ -121,6 +130,7 @@ module.exports = {
   reviewRequestLogic,
   calculateAvailableItems,
   fetchUserRequests, // تمت إضافة الدالة هنا
+  fetchAllRequests,
   async updateById(id, data, options = {}) {
     if (["approved", "rejected", "fulfilled"].includes(data?.status))
       return reviewRequestLogic(id, data, options);

@@ -30,7 +30,7 @@ const filterInventory = async (req, res, next) => {
 
 const getLowStock = async (req, res, next) => {
   try {
-    const data = await inventoryService.getLowStockItems({ session: req.mongoSession || null });
+    const data = await inventoryService.fetchInventory({ session: req.mongoSession || null });
     return res.status(200).json({ success: true, count: data.length, data });
   } catch (error) {
     return next(error);

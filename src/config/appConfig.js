@@ -104,7 +104,6 @@ const env = {
   DEFAULT_MONTHLY_POINTS: process.env.DEFAULT_MONTHLY_POINTS,
   LOW_STOCK_THRESHOLD: process.env.LOW_STOCK_THRESHOLD,
   LOG_LEVEL: process.env.LOG_LEVEL,
-  TRUSTED_ORIGINS: process.env.TRUSTED_ORIGINS,
   HTTPS_ENABLED: process.env.HTTPS_ENABLED,
   HTTPS_KEY_PATH: process.env.HTTPS_KEY_PATH,
   HTTPS_CERT_PATH: process.env.HTTPS_CERT_PATH,
@@ -197,7 +196,7 @@ const securityConfig = Object.freeze({
     "RATE_LIMIT_WINDOW",
   ),
   rateLimitMax: parseIntEnv(env.RATE_LIMIT_MAX, 100, "RATE_LIMIT_MAX"),
-  trustedOrigins: parseList(env.TRUSTED_ORIGINS, ["*"]),
+  trustedOrigins: parseList(["*"]),
   // ⚠️ IMPORTANT: DEVELOPER_API_KEY MUST be set in .env file
   // Used for X-Developer-Key header authentication on developer-only endpoints
   // If empty/undefined, developer endpoints (POST /api/dev/managed-accounts) will reject requests
@@ -285,7 +284,7 @@ const config = Object.freeze({
     refreshExpiresIn: authConfig.refreshTokenExpiresIn,
   },
   cors: {
-    origin: securityConfig.trustedOrigins,
+    origin: "*",
   },
   cloudinary: cloudinaryConfig,
   uploads: uploadConfig,
